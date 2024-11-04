@@ -1,0 +1,32 @@
+[
+    {
+        "vid_path":"Интервью с Вадимом Иванченко. 2 часть. С субтитрами.mp4",
+        "sub_path":"QSK0MyjQCOU.json",
+        "vid":false,
+        "sub":true
+    },
+    {
+        "vid_path":"САХАЛИН. 2 часть. Автопробег. С субтитрами.mp4",
+        "sub_path":"ndMh--YRtdw.json",
+        "vid":false,
+        "sub":true
+    },
+    {
+        "vid_path":"Абилимпикс 2017.  3-й Национальный чемпионат.  С субтитрами.mp4",
+        "sub_path":"V7CWg0eZ5Og.json",
+        "vid":false,
+        "sub":true
+    },
+    {
+        "vid_path":"Облачный переводчик. Интервью с Григорием Арутюняном. На жестовом языке, с субтитрами.mp4",
+        "sub_path":"x6OIYLD4N5E.json",
+        "vid":false,
+        "sub":true
+    },
+    {
+        "vid_path":"#УСЛЫШЬМЕНЯ: информационный запуск. На жестовом языке, с субтитрами.mp4",
+        "sub_path":"mBbeoxfz0b4.json",
+        "vid":false,
+        "sub":true
+    }
+]
