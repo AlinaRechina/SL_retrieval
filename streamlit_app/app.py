@@ -1,23 +1,25 @@
-import requests
-import aiohttp
-import asyncio
-import yadisk
-from translate import Translator
-from pathlib import Path
 from typing import List, Tuple, Dict, Union, Any
-import pandas as pd
-from plotly.express import violin
+from pathlib import Path
 from collections import Counter
 import json
+
+import asyncio
+import aiohttp
+import requests
+import yadisk
+from translate import Translator
+import pandas as pd
+from plotly.express import violin
 import streamlit as st
 import spacy
 
 t = Translator(to_lang='en', from_lang='ru')
 nlp = spacy.load("ru_core_news_sm")
-tmp_path = './tmp/'
+TMP_PATH = './tmp/'
 
 
 async def get_vids(query: str, top: int, token: str, disk_emb_path: str) -> List[int]:
+    '''Обращение к бэку'''
     link = "http://127.0.0.1:8000"  # вот это я хз, правильно ли
     async with aiohttp.ClientSession() as session:
         async with session.post(f'{link}/get_vids',
@@ -32,6 +34,7 @@ async def get_vids(query: str, top: int, token: str, disk_emb_path: str) -> List
 
 
 async def clear_path(path: Path):
+    '''Красивый путь'''
     if path.exists():
         for node in path.iterdir():
             node.unlink()
@@ -40,6 +43,7 @@ async def clear_path(path: Path):
 
 
 def get_data() -> Tuple[str, str, Any]:
+    '''Скачивание данных с Яндекс Диска'''
     token = st.text_input(
         "Enter your YaDisk Key:",
         type="password"
@@ -55,6 +59,7 @@ def get_data() -> Tuple[str, str, Any]:
 
 
 def count_stats(meta: List[Dict]) -> Tuple[Counter, Counter, Counter, List[float], List[int]]:
+    '''EDA'''
     lemmas = Counter()
     bigrams = Counter()
     trigrams = Counter()
@@ -65,7 +70,7 @@ def count_stats(meta: List[Dict]) -> Tuple[Counter, Counter, Counter, List[float
         word_counts.append(0)
         durations.append(phrase['end'] - phrase['start'])
         doc = nlp(phrase['text'])
-        for i in range(len(doc)):
+        for i, _ in enumerate(doc):
             if not (doc[i].is_punct or doc[i].is_space):
                 word_counts[-1] += 1
 
@@ -158,10 +163,10 @@ async def process_query(query: str, top_n: int, meta: List[Dict],
     query = t.translate(query)
     vid_idxs = await get_vids(query, top_n, token, path)
     for idx in vid_idxs:
-        if not Path(tmp_path + meta[idx]['video']).exists():
-            client.download(path + meta[idx]['video'], tmp_path + meta[idx]['video'])
+        if not Path(TMP_PATH + meta[idx]['video']).exists():
+            client.download(path + meta[idx]['video'], TMP_PATH + meta[idx]['video'])
         st.video(
-            tmp_path + meta[idx]['video'],
+            TMP_PATH + meta[idx]['video'],
             start_time=meta[idx]['start'],
             end_time=meta[idx]['end'] + 1,
             muted=True,

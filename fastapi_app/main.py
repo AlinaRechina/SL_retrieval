@@ -1,15 +1,15 @@
-import uvicorn
-from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel, ValidationError
-from http import HTTPStatus
-from typing import Dict, List, Union, Callable, Any
 import logging
+from typing import List, Callable
 
-import os 
-#import sys
-import yadisk
+import os
 import json
+
+from http import HTTPStatus
+import uvicorn
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+import yadisk
 
 from transformers import AutoTokenizer, CLIPTextModelWithProjection
 import torch
@@ -21,7 +21,7 @@ import config
 from pymorphy2 import MorphAnalyzer
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(filename='myapp.log', level=logging.INFO)
+logging.basicConfig(filename='./logs/myapp.log', level=logging.INFO)
 
 app = FastAPI(
     docs_url="/api/openapi",
@@ -45,12 +45,15 @@ class EdaResponse(BaseModel):
 def _startup_model(app: FastAPI) -> None:
     logger.info('Starting the app')
 
-    #app.state.model = CLIPTextModelWithProjection.from_pretrained(config.model, device=config.device)
-    #app.state.tokenizer = AutoTokenizer.from_pretrained(config.model, device=config.device)
+    #app.state.model = CLIPTextModelWithProjection.from_pretrained(
+    #config.model, device=config.device)
+    #app.state.tokenizer = AutoTokenizer.from_pretrained(
+    #config.model, device=config.device)
     logger.info('Loaded the model')
     app.state.vid_embs = None
 
 def start_app_handler(app: FastAPI) -> Callable:
+    '''При запуске приложения'''
     def startup() -> None:
         _startup_model(app)
     return startup
@@ -59,6 +62,7 @@ app.add_event_handler("startup", start_app_handler(app))
 
 @app.post("/get_vids", response_model=SearchResponse, status_code=HTTPStatus.OK)
 async def search(request:SearchRequest):
+    '''Главная ручка'''
     if 'embeddings.pt' not in os.listdir(config.corpus['folder_for_embedings']):
         url = request.disk_emb_path+'embeddings.pt'
         output = config.corpus['folder_for_embedings']+'embeddings.pt'
@@ -82,7 +86,7 @@ async def search(request:SearchRequest):
     for text_emb in text_embeds:
         search_res = app.state.vid_embs.most_similar(text_emb, topn=request.topn)
         topn_res = []
-        for i, dist in search_res: # index from test.json
+        for i, _ in search_res: # index from test.json
             topn_res.append(i)
         results.append(topn_res)
     return SearchResponse(idxs=results) # список индексов
@@ -94,17 +98,17 @@ def preprocess_text(text) -> List[str]:
     morph = MorphAnalyzer()
     lemmas = []
     for word in text.split(' '):
-        word = word.strip('!@#$%^&*()_+-=?><.,\'\":;][\{\}]`~\n\t\s—»«').lower()
+        word = word.strip('!@#$%^&*()_+-=?><.,\'\":;][{}]`~\n\t—»« ').lower()
         ana = morph.parse(word)
         lemmas.append(ana[0].normal_form)
     return lemmas
 
 @app.post("/eda", response_model=EdaResponse, status_code=HTTPStatus.OK)
-# Под эту ручку пока нет streamlit фронта, но в будущем может быть добавим
 async def eda(request:SearchRequest):
+    '''Эту ручку мы сделали случайно, использовать не планируем пока что'''
     # Это должно идти при запуске приложения, но раз мы не используем пока - будет тут
-    corpus, tokenized_corpus, meta_info_corpus = json.load(open(config.corpus['sub_path'], 
-                                                                'r', encoding='utf-8'))
+    corpus, tokenized_corpus, meta_info_corpus = json.load(
+        open(config.corpus['sub_path'], 'r', encoding='utf-8'))
     bm25 = BM25Okapi(tokenized_corpus)
     app.state.bm25 = bm25
     app.state.corpus = corpus
