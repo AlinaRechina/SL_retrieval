@@ -9,6 +9,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY fastapi_app/main.py ./app.py
 COPY fastapi_app/config.py ./config.py
 COPY data ./data
+RUN mkdir -p ./logs
 EXPOSE 8000
 
 # Setup an app user so the container doesn't run as the root user
