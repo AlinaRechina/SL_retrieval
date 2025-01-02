@@ -2,7 +2,7 @@
 1. Сделать [обзор литературы](https://docs.google.com/document/d/1NGa4D-8iVcYtnW0FPB_9Ytw0kxDtCm0l7aKy4JKtYBU/edit?tab=t.8n2zegdidvu1#heading=h.xzk2mno31nic)
 2. Найти видео с РЖЯ и субтитрами с Ютюба (мы выбрали канал VOGinfo, потому что там много видео с жестовой речью с распознанными субтитрами)
 3. Спарсить видео (они лежат на [Яндекс Диске](https://disk.yandex.ru/client/disk/SLR%20Project))
-4. Спарсить субтитры к видео
+4. Спарсить субтитры к видео (они тоже лежат на Яндекс Диске)
 5. EDA видео
 6. EDA субтитров
 
