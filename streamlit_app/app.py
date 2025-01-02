@@ -18,13 +18,13 @@ tmp_path = './tmp/'
 
 
 async def get_vids(query: str, top: int, token: str, disk_emb_path: str) -> List[int]:
-    link = "http://127.0.0.1:8000" # вот это я хз, правильно ли
+    link = "http://127.0.0.1:8000"  # вот это я хз, правильно ли
     async with aiohttp.ClientSession() as session:
         async with session.post(f'{link}/get_vids',
-                                json={'text':[query], 
-                                'topn':2,
-                                'token': token,
-                                'disk_emb_path': disk_emb_path}, 
+                                json={'text': [query],
+                                      'topn': top,
+                                      'token': token,
+                                      'disk_emb_path': disk_emb_path},
                                 timeout=300) as resp:
             resp_dict = await resp.json()
             idxs = resp_dict["idxs"][0]
@@ -153,7 +153,7 @@ async def draw_graphs(meta: List[Dict]):
             )
 
 
-async def process_query(query: str, top_n: int, meta: List[Dict], 
+async def process_query(query: str, top_n: int, meta: List[Dict],
                         path: str, client: yadisk.Client, token: str):
     query = t.translate(query)
     vid_idxs = await get_vids(query, top_n, token, path)
