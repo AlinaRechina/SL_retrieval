@@ -20,8 +20,8 @@ TMP_PATH = './tmp/'
 
 async def get_vids(query: str, top: int, token: str, disk_emb_path: str) -> List[int]:
     '''Обращение к бэку'''
-    link = "http://127.0.0.1:8000"  # вот это я хз, правильно ли
-    async with aiohttp.ClientSession() as session:
+    link = "http://fastapi:8000"  # вот это я хз, правильно ли
+    async with aiohttp.ClientSession(trust_env=True) as session:
         async with session.post(f'{link}/get_vids',
                                 json={'text': [query],
                                       'topn': top,
