@@ -21,7 +21,7 @@ import config
 from pymorphy2 import MorphAnalyzer
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(filename='myapp.log', level=logging.INFO)
+logging.basicConfig(filename='./logs/myapp.log', level=logging.INFO)
 
 app = FastAPI(
     docs_url="/api/openapi",
@@ -45,8 +45,10 @@ class EdaResponse(BaseModel):
 def _startup_model(app: FastAPI) -> None:
     logger.info('Starting the app')
 
-    #app.state.model = CLIPTextModelWithProjection.from_pretrained(config.model, device=config.device)
-    #app.state.tokenizer = AutoTokenizer.from_pretrained(config.model, device=config.device)
+    #app.state.model = CLIPTextModelWithProjection.from_pretrained(
+    config.model, device=config.device)
+    #app.state.tokenizer = AutoTokenizer.from_pretrained(
+    config.model, device=config.device)
     logger.info('Loaded the model')
     app.state.vid_embs = None
 
@@ -103,8 +105,8 @@ def preprocess_text(text) -> List[str]:
 # Под эту ручку пока нет streamlit фронта, но в будущем может быть добавим
 async def eda(request:SearchRequest):
     # Это должно идти при запуске приложения, но раз мы не используем пока - будет тут
-    corpus, tokenized_corpus, meta_info_corpus = json.load(open(config.corpus['sub_path'], 
-                                                                'r', encoding='utf-8'))
+    corpus, tokenized_corpus, meta_info_corpus = json.load(
+        open(config.corpus['sub_path'], 'r', encoding='utf-8'))
     bm25 = BM25Okapi(tokenized_corpus)
     app.state.bm25 = bm25
     app.state.corpus = corpus
