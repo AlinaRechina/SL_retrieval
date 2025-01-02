@@ -46,9 +46,9 @@ def _startup_model(app: FastAPI) -> None:
     logger.info('Starting the app')
 
     #app.state.model = CLIPTextModelWithProjection.from_pretrained(
-    config.model, device=config.device)
+    #config.model, device=config.device)
     #app.state.tokenizer = AutoTokenizer.from_pretrained(
-    config.model, device=config.device)
+    #config.model, device=config.device)
     logger.info('Loaded the model')
     app.state.vid_embs = None
 
