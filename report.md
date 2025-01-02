@@ -14,7 +14,8 @@
 - "start" - конец кусочка видео
 - "end" - начало кусочка видео
 - "video" - название видео
-Пример файла можно найти [тут](https://github.com/AlinaRechina/SL_retrieval/blob/fastapi_service/data/test.json).
+- 
+Пример файла можно найти [тут](https://github.com/AlinaRechina/SL_retrieval/blob/fastapi_service/data/test.json) (и его же можно вставить в сервис при тестировании).
 
 В **streamlit** части запрашиваются токен АПИ Яндекса, путь к папке с файлами на диске, файл .json с мета-информацией и запрос.
 
