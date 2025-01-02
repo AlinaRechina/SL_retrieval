@@ -1,0 +1,9 @@
+requests~=2.31.0
+aiohttp~=3.8.5
+yadisk~=3.1.0
+pandas~=2.0.3
+streamlit~=1.41.1
+spacy~=3.7.1
+translate~=3.6.1
+pathlib~=1.0.1
+plotly~=5.24.1
