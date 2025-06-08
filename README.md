@@ -2,7 +2,7 @@
 Retrieval system for videos containing sign language
 
 **Суть проекта**:
-- План А: “Sign Language Retrieval: текстовый поиск по корпусу записей на жестовом языке.”
+- План А: “Sign Language Retrieval: текстовый поиск по корпусу записей на жестовом языке.” (пока мы идём по этому варианту)
 - План Б: “Sign Language Retrieval: видео-поиск по корпусу записей на жестовом языке.”
 
 **Участники:**
