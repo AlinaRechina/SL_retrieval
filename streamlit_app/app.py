@@ -4,10 +4,9 @@ import asyncio
 import aiohttp
 import yadisk
 import streamlit as st
-import requests
 
 TMP_PATH = './tmp/'
-FASTAPI = "http://127.0.0.1:8000"
+FASTAPI = "http://fastapi:8000"
 Path(TMP_PATH).mkdir(parents=True, exist_ok=True)
 
 
