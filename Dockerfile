@@ -3,6 +3,7 @@ WORKDIR /usr/local/fastapi_app
 
 # Install the application dependencies
 COPY fastapi_app/requirements.txt ./requirements.txt
+RUN apt-get update && apt-get install -y python3-opencv
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy in the source code
