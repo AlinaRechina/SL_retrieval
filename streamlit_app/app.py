@@ -4,10 +4,10 @@ import asyncio
 import aiohttp
 import yadisk
 import streamlit as st
-
+import requests
 
 TMP_PATH = './tmp/'
-FASTAPI = "http://fastapi:8000"
+FASTAPI = "http://127.0.0.1:8000"
 Path(TMP_PATH).mkdir(parents=True, exist_ok=True)
 
 
@@ -55,19 +55,24 @@ def get_data():
     )
 
 
-async def send_load_request(token: str, disk_emb_path: str):
+async def send_load_request(token: str, disk_path: str):
     async with aiohttp.ClientSession(trust_env=True) as session:
-        async with session.post(f'{FASTAPI}/load_vids',
-                                json={'token': token,
-                                      'disk_path': disk_emb_path}) as resp:
-            st.session_state['meta_list'] = resp.json()
+        async with session.post(
+            f'{FASTAPI}/load_vids',
+            json={
+                'token': token,
+                'disk_path': disk_path
+            }
+        ) as resp:
+            vids = await resp.json()
+            return vids['vids']
 
 
 async def process_query(query: str, top_n: int):
     meta = st.session_state['meta_list']
     vid_idxs = await get_vids(query, top_n)
     for idx in vid_idxs:
-        if not Path(TMP_PATH + meta[idx]['video']).exists():
+        if not Path(TMP_PATH + meta[idx]['title']).exists():
             st.session_state['yadisk_client'].download(
                 st.session_state['yadisk_path'] + meta[idx]['title'], TMP_PATH + meta[idx]['title']
             )
@@ -81,26 +86,33 @@ async def process_query(query: str, top_n: int):
 
 
 async def main():
+    st.session_state['meta_list'] = []
     get_data()
-    get_client()
-    await send_load_request(st.session_state['token'], st.session_state['yadisk_path'])
-    left, right = st.columns([5, 1])
-    with left:
-        query = st.text_area(
-            "Enter your query:",
-            placeholder="Интервью с сурдолимпийским чемпионом..."
+
+    if st.session_state['yadisk_path'] and st.session_state['token']:
+        st.session_state['meta_list'] = await send_load_request(
+            token=st.session_state['token'],
+            disk_path=st.session_state['yadisk_path']
         )
 
-    with right:
-        top_n = st.number_input(
-            "Enter maximum vids:",
-            min_value=1,
-            max_value=10,
-            value="min",
-            step=1
-        )
+    if st.session_state['meta_list']:
+        left, right = st.columns([5, 1])
+        with left:
+            query = st.text_area(
+                "Enter your query:",
+                placeholder="Интервью с сурдолимпийским чемпионом..."
+            )
 
-    if query and 'meta_list' in st.session_state:
+        with right:
+            top_n = st.number_input(
+                "Enter maximum vids:",
+                min_value=1,
+                max_value=10,
+                value="min",
+                step=1
+            )
+
+    if st.session_state['meta_list'] and query:
         await process_query(query, top_n)
 
 

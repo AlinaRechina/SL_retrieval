@@ -25,29 +25,36 @@ app = FastAPI(
     swagger_ui_parameters={"tryItOutEnabled": True}
 )
 
+
 class InitRequest(BaseModel):
-    token: str #yadisk.Client
+    token: str  # yadisk.Client
     disk_path: str
+
 
 class Vid(BaseModel):
     start: float
     end: float
     title: str
 
+
 class InitResponse(BaseModel):
     vids: List[Vid]
+
 
 class SearchRequest(BaseModel):
     text: str
     topn: int
 
+
 class SearchResponse(BaseModel):
     idxs: List[int]
+
 
 def embed_text(text, model, tokenizer):
     inputs = tokenizer([text], padding=True, return_tensors="pt")
     outputs = model(**inputs)
     return outputs.pooler_output
+
 
 def embed_vid(vid, title, model, processor):
     out_meta = []
@@ -75,7 +82,7 @@ def embed_vid(vid, title, model, processor):
         out_meta.append(Vid(
             start=i / fps,
             end=(i + frame_rate * 8) / fps,
-            title= title
+            title=title
         ))
     return out_meta, embeddings
 
@@ -98,14 +105,18 @@ def _startup_model(app: FastAPI) -> None:
 
 def start_app_handler(app: FastAPI) -> Callable:
     '''При запуске приложения'''
+
     def startup() -> None:
         _startup_model(app)
+
     return startup
+
 
 app.add_event_handler("startup", start_app_handler(app))
 
+
 @app.post("/load_vids", response_model=InitResponse, status_code=HTTPStatus.OK)
-async def search(request:InitRequest):
+async def search(request: InitRequest):
     client = yadisk.Client(token=request.token)
     meta = []
     app.state.embs = None
@@ -123,15 +134,17 @@ async def search(request:InitRequest):
 
         os.unlink('tmp/' + title)
     logger.info('Loaded the video corpus')
-    return InitResponse(vids=meta) # список индексов
+    return InitResponse(vids=meta)  # список индексов
+
 
 @app.post("/get_vids", response_model=SearchResponse, status_code=HTTPStatus.OK)
-async def search(request:SearchRequest):
+async def search(request: SearchRequest):
     '''Главная ручка'''
     text_embed = app.state.embed_text(request.text)
     logger.info('Embedded the queries')
     res = (text_embed @ app.state.embs.T)[0].argsort()[-request.topn:]
-    return SearchResponse(idxs=res.tolist()) # список индексов
+    return SearchResponse(idxs=res.tolist())  # список индексов
+
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
